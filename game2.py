@@ -22,6 +22,7 @@ class Game:
             {"col": 0, "row": 0, "speed": 1, "width": self.car_size, "height": self.car_size},
             {"col": 0, "row": 0, "speed": 2, "width": self.car_size, "height": self.car_size},
             {"col": 0, "row": 0, "speed": 1, "width": self.car_size, "height": self.car_size},
+            {"col": -1, "row": -1, "speed": 1, "width": self.car_size, "height": self.car_size}
         ]
 
         self.total_reward = 0.
@@ -71,6 +72,10 @@ class Game:
         if self.block[2]["row"]+1 < self.screen_height:
             state[self.block[2]["col"], self.block[2]["row"]+1] = 4
 
+        if self.block[3]["row"] != -1 and self.block[3]["col"] != -1:
+            if self.block[3]["row"] < self.screen_height:
+                state[self.block[3]["col"], self.block[3]["row"]] = 2
+
         return state
 
     def _draw_screen(self):
@@ -114,12 +119,17 @@ class Game:
                                    self.car_size, 1,
                                    linewidth=0, facecolor="black")
 
+        block4 = patches.Rectangle((self.block[3]["col"] - 0.4, self.block[3]["row"]),
+                                   self.car_size, self.car_size,
+                                   linewidth=0, facecolor="#0000FF")
+
         self.axis.add_patch(road)
         self.axis.add_patch(car)
         self.axis.add_patch(block1)
         self.axis.add_patch(block2)
         self.axis.add_patch(block3)
         self.axis.add_patch(block3_tail)
+        self.axis.add_patch(block4)
 
         self.fig.canvas.draw()
         # 게임의 다음 단계 진행을 위해 matplot 의 이벤트 루프를 잠시 멈춥니다.
@@ -138,6 +148,8 @@ class Game:
         self.block[1]["row"] = 0
         self.block[2]["col"] = random.randrange(self.road_left, self.road_right + 1)
         self.block[2]["row"] = 0
+        self.block[3]["col"] = -1
+        self.block[3]["row"] = -1
 
         self._update_block()
 
@@ -162,14 +174,13 @@ class Game:
         화면을 벗어난 경우에는 다시 방해를 시작하도록 재설정을 합니다.
         """
         reward = 0
-        rand_val = 0
 
         if self.block[0]["row"] > 0:
             self.block[0]["row"] -= self.block[0]["speed"]
         else:
-            while(1):
+            while 1:
                 rand_val = random.randrange(self.road_left, self.road_right + 1)
-                if rand_val != self.block[1]["col"] and rand_val != self.block[2]["col"] :
+                if rand_val != self.block[1]["col"] and rand_val != self.block[2]["col"]:
                     break
 
             self.block[0]["col"] = rand_val
@@ -200,6 +211,20 @@ class Game:
             self.block[2]["row"] = self.screen_height - 1
             reward += 1
 
+        if self.block[3]["row"] > 0 and self.block[3]["col"] != -1:
+            self.block[3]["row"] -= self.block[3]["speed"]
+        else:
+            self.block[3]["col"] = self.block[3]["row"] = -1
+            rand_val = random.randrange(self.road_left, self.road_right + 1)
+            if rand_val == self.block[0]["col"] and self.block[0]["row"] != (self.screen_height - 1):
+                self.block[3]["col"] = rand_val
+                self.block[3]["row"] = self.screen_height - 1
+                reward += 1
+            elif rand_val == self.block[2]["col"] and self.block[2]["row"] < (self.screen_height - 2):
+                self.block[3]["col"] = rand_val
+                self.block[3]["row"] = self.screen_height - 1
+                reward += 1
+
         return reward
 
     def _is_car_smash(self, block):
@@ -219,7 +244,7 @@ class Game:
         # 사각형 박스의 충돌을 체크하는 것이 아니라 좌표를 체크하는 것이어서 화면에는 약간 다르게 보일 수 있습니다.
 
         # 그냥 승용차
-        if self._is_car_smash(self.block[0]):
+        if self._is_car_smash(self.block[0]) or self._is_car_smash(self.block[3]):
             self.total_reward += self.current_reward
 
             return -2
