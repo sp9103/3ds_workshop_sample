@@ -3,3 +3,4 @@ model_game1/*
 model_stupid/*
 *.xml
 *.iml
+*.pyc

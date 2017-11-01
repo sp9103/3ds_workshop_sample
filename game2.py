@@ -169,7 +169,7 @@ class Game:
         else:
             while(1):
                 rand_val = random.randrange(self.road_left, self.road_right + 1)
-                if(rand_val != self.block[1]["col"] and rand_val != self.block[2]["col"]) :
+                if rand_val != self.block[1]["col"] and rand_val != self.block[2]["col"] :
                     break
 
             self.block[0]["col"] = rand_val
@@ -179,9 +179,9 @@ class Game:
         if self.block[1]["row"] > 0:
             self.block[1]["row"] -= self.block[1]["speed"]
         else:
-            while (1):
+            while 1:
                 rand_val = random.randrange(self.road_left, self.road_right + 1)
-                if (rand_val != self.block[0]["col"] and rand_val != self.block[2]["col"]):
+                if rand_val != self.block[0]["col"] and rand_val != self.block[2]["col"]:
                     break
 
             self.block[1]["col"] = rand_val
@@ -191,25 +191,25 @@ class Game:
         if self.block[2]["row"] > 0:
             self.block[2]["row"] -= self.block[2]["speed"]
         else:
-            while (1):
+            while 1:
                 rand_val = random.randrange(self.road_left, self.road_right + 1)
-                if (rand_val != self.block[0]["col"] and rand_val != self.block[1]["col"]):
+                if rand_val != self.block[0]["col"] and rand_val != self.block[1]["col"]:
                     break
 
             self.block[2]["col"] = rand_val
-            self.block[2]["row"] = self.screen_height #- 1
+            self.block[2]["row"] = self.screen_height - 1
             reward += 1
 
         return reward
 
     def _is_car_smash(self, block):
-        if(self.car["col"] == block["col"]):
+        if self.car["col"] == block["col"]:
             block_row_pos = [block["row"] - block["height"] / 2, block["row"] + block["height"] / 2]
             car_row_pos = [self.car["row"] - self.car["height"] / 2, self.car["row"] + self.car["height"] / 2]
-            if(block_row_pos[0] <= car_row_pos[0] and car_row_pos[0] <= block_row_pos[1]):
+            if block_row_pos[0] <= car_row_pos[0] and car_row_pos[0] <= block_row_pos[1]:
                 return True
 
-            if (block_row_pos[0] <= car_row_pos[1] and car_row_pos[1] <= block_row_pos[1]):
+            if block_row_pos[0] <= car_row_pos[1] and car_row_pos[1] <= block_row_pos[1]:
                 return True
 
         return False
@@ -219,29 +219,29 @@ class Game:
         # 사각형 박스의 충돌을 체크하는 것이 아니라 좌표를 체크하는 것이어서 화면에는 약간 다르게 보일 수 있습니다.
 
         # 그냥 승용차
-        if (self._is_car_smash(self.block[0])):
+        if self._is_car_smash(self.block[0]):
             self.total_reward += self.current_reward
 
             return -2
         # 외제차
-        if (self._is_car_smash(self.block[1])):
+        if self._is_car_smash(self.block[1]):
             self.total_reward += self.current_reward
 
             return -4
         
         # 트럭
-        if (self._is_car_smash(self.block[2])):
+        if self._is_car_smash(self.block[2]):
             self.total_reward += self.current_reward
 
             return -4
         tail_block = {"col": self.block[2]["col"], "row": self.block[2]["row"]+1, "speed": 1, "width": self.car_size, "height": self.car_size}
-        if (self._is_car_smash(tail_block)):
+        if self._is_car_smash(tail_block):
             self.total_reward += self.current_reward
 
             return -4
         
         # 가드레일을 박았을 때도 패널티를 줌
-        if (self.car["col"] < self.road_left or self.car["col"] > self.road_right):
+        if self.car["col"] < self.road_left or self.car["col"] > self.road_right:
 
             self.total_reward += self.current_reward
 
