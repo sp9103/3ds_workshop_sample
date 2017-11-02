@@ -192,7 +192,7 @@ class Game:
         else:
             while 1:
                 rand_val = random.randrange(self.road_left, self.road_right + 1)
-                if rand_val != self.block[0]["col"] and rand_val != self.block[2]["col"]:
+                if rand_val != self.block[0]["col"] and rand_val != self.block[2]["col"] and rand_val != self.block[3]:
                     break
 
             self.block[1]["col"] = rand_val
@@ -229,12 +229,15 @@ class Game:
 
     def _is_car_smash(self, block):
         if self.car["col"] == block["col"]:
-            block_row_pos = [block["row"] - block["height"] / 2, block["row"] + block["height"] / 2]
+            """block_row_pos = [block["row"] - block["height"] / 2, block["row"] + block["height"] / 2]
             car_row_pos = [self.car["row"] - self.car["height"] / 2, self.car["row"] + self.car["height"] / 2]
             if block_row_pos[0] <= car_row_pos[0] and car_row_pos[0] <= block_row_pos[1]:
                 return True
 
             if block_row_pos[0] <= car_row_pos[1] and car_row_pos[1] <= block_row_pos[1]:
+                return True"""
+
+            if block["row"] == self.car["row"] or block["row"] + 1 == self.car["row"]:
                 return True
 
         return False

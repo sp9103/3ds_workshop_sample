@@ -3,6 +3,7 @@ model_game1/*
 model_stupid/*
 model_game2/*
 logs/*
+.idea/*
 *.xml
 *.iml
 *.pyc
