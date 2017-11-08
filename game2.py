@@ -192,7 +192,8 @@ class Game:
         else:
             while 1:
                 rand_val = random.randrange(self.road_left, self.road_right + 1)
-                if rand_val != self.block[0]["col"] and rand_val != self.block[2]["col"] and rand_val != self.block[3]:
+                if rand_val != self.block[0]["col"] and rand_val != self.block[2]["col"]\
+                        and rand_val != self.block[3]["col"]:
                     break
 
             self.block[1]["col"] = rand_val
