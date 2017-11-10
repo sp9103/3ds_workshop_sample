@@ -65,11 +65,12 @@ class DQN:
 
     def init_state(self, state):
         state = [state for _ in range(self.STATE_LEN)]
-        self.state = np.stack(state, axis=2)
+        self.state = np.stack(state, axis=1)
 
     def remember(self, state, action, reward, terminal):
-        next_state = np.reshape(state, (self.width, self.height, 1))
-        next_state = np.append(self.state[:, :, 1:], next_state, axis=2)
+        #next_state = np.reshape(state, (self.width, self.height, 1))
+        pop_state = self.state[1:]
+        next_state = np.append(pop_state, state, axis=1)
 
         self.memory.append((self.state, next_state, action, reward, terminal))
 

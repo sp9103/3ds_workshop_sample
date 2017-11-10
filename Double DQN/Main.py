@@ -56,8 +56,6 @@ def train():
         terminal = False
         total_reward = 0
 
-        # 게임을 초기화하고 현재 상태를 가져옵니다.
-        # 상태는 screen_width x screen_height 크기의 화면 구성입니다.
         state = game.reset()
         net.init_state(state)
 
@@ -73,7 +71,7 @@ def train():
                 epsilon -= 1 / 1000
 
             # 결정한 액션을 이용해 게임을 진행하고, 보상과 게임의 종료 여부를 받아옵니다.
-            state, reward, terminal = game.step(action)
+            state, reward, terminal, info = game.step(action)
             total_reward += reward
 
             # 현재 상태를 Brain에 기억시킵니다.
