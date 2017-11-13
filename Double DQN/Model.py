@@ -16,7 +16,7 @@ class DQN:
         selfs.state = None
         selfs.dimension = dim           #state dimesion
 
-        selfs.input_X = tf.placeholder(tf.float32, [None, dim, selfs.STATE_LEN])
+        selfs.input_X = tf.placeholder(tf.float32, [None, dim * selfs.STATE_LEN])
         selfs.input_A = tf.placeholder(tf.int64, [None])
         selfs.input_Y = tf.placeholder(tf.float32, [None])
 
@@ -27,9 +27,9 @@ class DQN:
 
     def _build_network(selfs, name):
         with tf.variable_scope(name):
-            model = tf.layers.dense(selfs.input_X, 128, activation=tf.nn.relu)
-            model = tf.layers.dense(model, 64, activation=tf.nn.relu)
-            model = tf.layers.dense(model, 64, activation=tf.nn.relu)
+            model = tf.layers.dense(selfs.input_X, 32, activation=tf.nn.relu)
+            model = tf.layers.dense(model, 32, activation=tf.nn.relu)
+            model = tf.layers.dense(model, 16, activation=tf.nn.relu)
 
             Q = tf.layers.dense(model, selfs.n_action, activation=None)
 
@@ -40,7 +40,7 @@ class DQN:
         one_hot = tf.one_hot(self.input_A, self.n_action, 1.0, 0.0)
         Q_value = tf.reduce_sum(tf.multiply(self.Q, one_hot), axis=1)
         cost = tf.reduce_mean(tf.square(self.input_Y - Q_value))
-        train_op = tf.train.AdamOptimizer(1e-6).minimize(cost)
+        train_op = tf.train.AdamOptimizer(1e-3).minimize(cost)
 
         return cost, train_op
 
@@ -65,12 +65,12 @@ class DQN:
 
     def init_state(self, state):
         state = [state for _ in range(self.STATE_LEN)]
-        self.state = np.stack(state, axis=1)
+        self.state = np.reshape(state, self.dimension * self.STATE_LEN)
 
     def remember(self, state, action, reward, terminal):
         #next_state = np.reshape(state, (self.width, self.height, 1))
-        pop_state = self.state[1:]
-        next_state = np.append(pop_state, state, axis=1)
+        pop_state = self.state[self.dimension:]
+        next_state = np.append(pop_state, state, axis=0)
 
         self.memory.append((self.state, next_state, action, reward, terminal))
 

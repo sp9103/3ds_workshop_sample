@@ -8,3 +8,5 @@ logs/*
 *.iml
 *.pyc
 *.SUNGPHILL-PC
+Double DQN/model
+Double DQN/logs
