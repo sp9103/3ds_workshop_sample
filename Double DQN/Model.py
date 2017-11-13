@@ -107,9 +107,11 @@ class DQN:
             else:
                 Y.append(reward[i] + self.GAMMA * np.max(target_Q_value[i]))
 
-        self.session.run(self.train_op,
+        _, cost_val = self.session.run([self.train_op, self.cost],
                          feed_dict={
                              self.input_X: state,
                              self.input_A: action,
                              self.input_Y: Y
                          })
+
+        return cost_val

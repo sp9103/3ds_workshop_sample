@@ -50,6 +50,7 @@ def train():
 
     epsilon = 1.0
     time_step = 0
+    cost = 0.0
     total_reward_list = []
 
     for episode in range(MAX_EPISODE):
@@ -79,14 +80,14 @@ def train():
             net.remember(state, action, reward, terminal)
 
             if time_step > OBSERVE and time_step % TRAIN_INTERVAL == 0:
-                net.train()
+                cost = net.train()
 
             if time_step % TARGET_UPDATE_INTERVAL == 0:
                 net.update_target_network()
 
             time_step += 1
 
-        print('게임횟수: %d 점수: %.1f' % (episode + 1, total_reward))
+        print('게임횟수: %d 점수: %.1f cost : %f' % (episode + 1, total_reward, cost))
 
         total_reward_list.append(total_reward)
 
