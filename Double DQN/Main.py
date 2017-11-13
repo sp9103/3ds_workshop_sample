@@ -87,6 +87,8 @@ def train():
 
             time_step += 1
 
+            game.render()
+
         print('게임횟수: %d 점수: %.1f cost : %f' % (episode + 1, total_reward, cost))
 
         total_reward_list.append(total_reward)
@@ -98,6 +100,37 @@ def train():
 
         if episode % 100 == 0:
             saver.save(sess, 'model/dqn.ckpt', global_step=time_step)
+
+    game.close()
+
+def replay():
+    print('let\'s start train')
+    sess = tf.Session()
+
+
+    game = gym.make('CartPole-v0')
+    NUM_ACTION = game.action_space
+    net = DQN(sess, 4, 2)  # example has 4 state
+
+    saver = tf.train.Saver()
+    ckpt = tf.train.get_checkpoint_state('model')
+    saver.restore(sess, ckpt.model_checkpoint_path)
+
+    for episode in range(MAX_EPISODE):
+        terminal = False
+
+        state = game.reset()
+        net.init_state(state)
+
+        while not terminal:
+            action = net.get_action()
+            state, reward, terminal, info = game.step(action)
+            net.remember(state, action, reward, terminal)
+
+            time.sleep(0.1)
+            game.render()
+
+    game.close()
 
 def main(_):
     """reward = 0
@@ -124,12 +157,10 @@ def main(_):
 
     env.close()"""
 
-    train()
-
-    #if FLAGS.train:
-    #    train();
-    #else:
-    #    """"""
+    if FLAGS.train:
+        train();
+    else:
+        replay()
 
 if __name__ == '__main__':
     tf.app.run()
